@@ -15,4 +15,4 @@ It showed clear seasonal peaks in **March** and **December**, reflecting holiday
 The 5-year forecast indicates a continued upward trend, although uncertainty increases over time.  
 This model can be applied for **short-term forecasting**, provided it is regularly updated with new data to maintain accuracy and support airport management in **capacity planning and service strategy**.
 
-📄 [Full Report](https://drive.google.com/file/d/1YMdNZ-sZI5be6nGwgU3Q74xj1VcBynR9/view?usp=drive_link)
+📄 [Click here to view full report](https://drive.google.com/file/d/1YMdNZ-sZI5be6nGwgU3Q74xj1VcBynR9/view?usp=drive_link)
