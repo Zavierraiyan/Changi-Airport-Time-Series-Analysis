@@ -1,0 +1,683 @@
+---
+title: ""
+output:
+  pdf_document:
+    number_sections: FALSE
+    df_print: kable
+    fig_caption: yes
+    toc: FALSE
+    latex_engine: xelatex
+mainfont: Times New Roman
+geometry: "left = 2cm, right = 2cm, top = 2cm, bottom = 2cm"
+fontsize: 11pt
+header-includes:
+  - \usepackage{float}
+  - \usepackage{sectsty}
+  - \usepackage{paralist}
+  - \usepackage{setspace}
+  - \usepackage{fancyhdr}
+  - \usepackage{lastpage}
+  - \usepackage{dcolumn}
+  - \usepackage{multicol}
+  - \usepackage{caption}
+  - \captionsetup[table]{name = Tabel}
+  - \captionsetup[figure]{name = Gambar}
+  - \usepackage[titles]{tocloft}
+editor_options:
+  chunk_ouput_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, massage = FALSE, comment = NA)
+options(tinytex.verbose = TRUE)
+```
+
+
+\allsectionsfont{\centering}
+\subsectionfont{\raggedright}
+\subsubsectionfont{\raggedright}
+
+\pagenumbering{gobble}
+
+\begin{spacing}{1.5}
+
+\begin{centering}
+
+\vspace{1cm}
+
+\large
+{\bf \emph{PROJECT} METODE PERAMALAN}
+
+\vspace{1cm}
+
+\large
+{\bf Analisis Runtun Waktu pada Data Jumlah Penumpang Pesawat}
+
+\vspace{1cm}
+
+```{r uni_logo, echo = F, out.width = "30%"}
+knitr::include_graphics("Logo UI.png")
+```
+
+\vspace{1cm}
+
+\large
+{\bf Disusun oleh: \\Kelompok X}
+
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{ll}
+  
+  \large{\bf Anggota 1} & \large{\bf 2200000000} \\
+  \large{\bf Anggota 2} & \large{\bf 2200000000} \\
+  \large{\bf Anggota 3} & \large{\bf 2200000000} \\ 
+  \large{\bf Anggota 4} & \large{\bf 2200000000}  \\ 
+  \large{\bf Anggota 5} & \large{\bf 2200000000} \\ 
+  
+  \end{tabular}
+\end{table}
+
+\vspace{1cm}
+
+\large
+{\bf PROGRAM STUDI STATISTIKA\\FAKULTAS MATEMATIKA DAN ILMU PENGETAHUAN ALAM\\UNIVERSITAS INDONESIA\\MEI 2024}
+
+\end{centering}
+
+\end{spacing}
+
+\newpage
+
+# ABSTRAK
+
+\pagenumbering{roman}
+
+Metode Peramalan atau *Forecasting* merupakan salah satu teknik dalam sistem perencanaan yang berfungsi untuk menentukan aktivitas produksi yang akan terjadi di masa yang akan datang berdasarkan data historis masa lalu guna memperoleh suatu sistem dan kebijakan yang lebih baik dan menguntungkan bagi perusahaan atau organisasi yang terkait. Untuk mendapatkan laba yang besar pada suatu perusahaan adalah dengan menentukan prediksi penjualan pada bulan berikutnya. Prediksi merupakan salah satu kunci dari keberhasilan penjualan karena dengan nilai prediksi penjualan yang bisa dijadikan panduan sebagai acuan untuk menentukan suatu penjualan produk. Dalam hal jumlah penumpang pesawat, maskapai penerbangan penting untuk meramalkan (*forecasting*) jumlah penumpang pesawat di masa depan agar dapat membuat keputusan yang lebih terstruktur mengenai perluasan kapasitas, perencanaan rute, dan strategi pemasaran. Metode ARIMA merupakan metode analisis data runtun waktu yang sering digunakan untuk peramalan. *Seasonal Autoregressive Integrated Moving Average* (SARIMA) merupakan pengembangan dari model *Autoregressive Integrated Moving Average* (ARIMA) pada data runtun waktu yang memiliki pola musiman. Dalam penelitian ini, data jumlah penumpang bulanan maskapai Amerika Serikat dari tahun 1949 hingga 1960 akan dimodelkan dengan analisis runtun waktu. Berdasarkan hasil analisis, model yang sesuai dengan jumlah penumpang pesawat bulanan (\{$Y_t$\}) yaitu  ln($Y_t$) merupakan ARIMA$(0, 1, 1)(0, 1, 1)_{12}$. Dengan model tersebut, didapatkan *forecasting* untuk data `test` menghasilkan nilai MAPE = 1.478059 < 10, yang mengindikasikan bahwa peramalan (*forecasting*) dilakukan dengan sangat akurat. Nilai *forecasting* menunjukkan tren meningkat yang mengindikasikan kemungkinan kenaikan jumlah penumpang pesawat bulanan pada maskapai penerbangan Amerika Serikat di masa depan.
+
+**Kata Kunci**: Penumpang Pesawat, Peramalan, SARIMA
+
+\newpage
+
+\renewcommand{\contentsname}{DAFTAR ISI}
+\addcontentsline{toc}{section}{\contentsname}
+\setcounter{tocdepth}{2}
+\tableofcontents
+\clearpage
+ 
+\newpage
+
+\cleardoublepage
+\pagenumbering{roman}
+\setcounter{page}{4}
+
+\phantomsection
+
+\newlength{\mylen}
+\renewcommand{\tablename}{Tabel}
+\renewcommand{\cfttabpresnum}{\tablename \enspace}
+\renewcommand{\cfttabaftersnum}{:}
+\settowidth{\mylen}{\cfttabpresnum \cfttabaftersnum}
+\addtolength{\cfttabnumwidth}{\mylen}
+
+\renewcommand{\listtablename}{DAFTAR TABEL}
+\addcontentsline{toc}{section}{\listtablename}
+\listoftables
+
+\renewcommand{\figurename}{Gambar}
+\renewcommand{\cftfigpresnum}{\figurename \enspace}
+\renewcommand{\cftfigaftersnum}{:}
+\settowidth{\mylen}{\cftfigpresnum \cftfigaftersnum}
+\addtolength{\cftfignumwidth}{\mylen}
+
+\renewcommand{\listfigurename}{DAFTAR GAMBAR}
+\addcontentsline{toc}{section}{\listfigurename}
+\listoffigures
+
+\newpage
+
+\section[BAB I PENDAHULUAN]{BAB I \\ PENDAHULUAN}
+
+\pagenumbering{arabic}
+
+## 1.1 Latar Belakang
+
+Perkembangan ilmu teknologi telah melakukan banyak perubahan dalam berbagai bidang kehidupan, misalnya dalam bidang transportasi. Perjalanan yang awalnya dilakukan dengan berjalan kaki, secara perlahan mulai berubah dengan kemunculan transportasi darat, laut, hingga udara. Kemudahan yang diberikan oleh transportasi ini dapat dilihat dalam kehidupan sehari hari, seperti membantu dalam perpindahan barang maupun manusia ke berbagai wilayah sehingga berperan pula dalam menunjang perkembangan pembangunan.
+Transportasi udara, pada khususnya, merupakan transportasi yang memiliki keunggulan lebih, yakni dapat menjangkau berbagai wilayah dalam waktu yang relatif lebih cepat dan bebas hambatan dibanding dua jenis transportasi lain. Hal ini dapat dibuktikan melalui perjalanan yang biasanya harus ditempuh dalam waktu berhari-hari dapat dilakukan hanya dalam hitungan jam saja. Adanya faktor ini merupakan salah satu alasan mengapa banyak dari masyarakat yang lebih memilih untuk bepergian menggunakan transportasi udara, seperti pesawat.
+
+Amerika Serikat, sebagai salah satu negara maju dan merupakan negara tersibuk di dunia, merupakan negara di urutan pertama dengan jumlah penumpang pesawat terbanyak per harinya di dunia. Dilansir dari FAA Air Traffic Organization, terdapat sebanyak 917 juta penumpang maskapai Amerika Serikat pada tahun 2022 atau naik sebesar 55% dari tahun sebelumnya. Hal ini menunjukkan bahwa penggunaan transportasi udara cukup menarik perhatian banyak orang.
+
+Pada penelitian ini, akan dilakukan analisis *forecast* untuk meramalkan jumlah penumpang pesawat Amerika Serikat selama 4 tahun ke depan (dimulai dari akhir waktu data `train`). Data yang digunakan merupakan data jumlah penumpang bulanan maskapai Amerika Serikat dari tahun 1949 hingga 1960 yang dapat diakses melalui *platform* Kaggle. 
+
+## 1.2 Rumusan Masalah
+
+Berdasarkan latar belakang dari penelitian yang dilakukan, maka dapat dibuat beberapa rumusan masalah sebagai berikut.
+
+1. Bagaimana model yang cocok untuk memodelkan data jumlah penumpang pesawat di Amerika Serikat? 
+
+2. Bagaimana hasil *forecast* (ramalan) jumlah penumpang pesawat Amerika Serikat selama 4 tahun ke depan menggunakan metode analisis runtun waktu?
+
+3. Bagaimana keakuratan hasil *forecast* menggunakan analisis runtun waktu dalam *forecasting* (peramalan) jumlah penumpang pesawat bulanan di Amerika Serikat?
+
+## 1.3 Tujuan
+
+Berdasarkan rumusan masalah di atas, maka tujuan yang ingin dicapai dalam penelitian ini adalah 
+
+1. Mendapatkan model runtun waktu yang sesuai untuk memodelkan jumlah penumpang pesawat pada maskapai penerbangan di Amerika Serikat.
+
+2. Mengetahui hasil *forecast* (ramalan) jumlah penumpang pesawat pada maskapai penerbangan Amerika Serikat selama 4 tahun kedepan menggunakan analisis runtun waktu.
+
+3. Mengetahui keakuratan hasil *forecast* dalam meramalkan (*forecasting*) jumlah penumpang pesawat bulanan di Amerika Serikat.
+
+## 1.4 Manfaat
+
+Beberapa manfaat yang dapat diharapkan akan diperoleh dari hasil analisis runtun waktu pada data jumlah penumpang pesawat maskapai penerbangan di  Amerika Serikat adalah sebagai berikut.
+
+1. Kita memperoleh model yang dapat meramalkan (*forecasting*) jumlah penumpang di masa depan sehingga dapat mempermudah maskapai penerbangan untuk merencanakan sumber daya, kapasitas, dan operasional penerbangan.
+
+2. Kita dapat mendeteksi anomali yang mengindikasikan kejadian signifikan, seperti cuaca ekstrem, pandemi, atau resesi ekonomi.
+
+3. Kita dapat memahami dan memprediksi nilai-nilai masa depan agar dapat membuat keputusan yang lebih terstruktur mengenai perluasan kapasitas, perencanaan rute, dan strategi pemasaran.
+
+\newpage
+
+\section[BAB II METODE PENELITIAN]{BAB II \\ METODE PENELITIAN} 
+
+## 2.1 Variabel Penelitian
+
+Kami menggunakan data yang diambil dari Kaggle melalui link berikut ini. \textcolor{blue}{\url{https://www.kaggle.com/datasets/chirag19/air-passengers}}. Dataset tersebut berisi jumlah penumpang bulanan maskapai Amerika Serikat dari tahun 1949 hingga 1960. Dataset ini juga tersedia dalam dataset bawaan R dengan nama `AirPassengers`.
+
+Keterangan variabel:
+
+  - `month`: bulan dari tahun.
+  - `passenger`: jumlah penumpang yang melakukan perjalanan pada bulan tersebut (dalam satuan ribuan).
+
+## 2.2 Data
+
+### Import Library
+
+```{r inputlibrary, message = FALSE}
+library(ggplot2)
+library(ggfortify)
+library(tseries)
+library(forecast)
+library(TSA)
+library(TSstudio)
+library(zoo)
+library(lmtest)
+library(fpp2)
+library(knitr)
+``` 
+
+### Import Data
+
+```{r import data, results = "hide"}
+data("AirPassengers")
+AP <- AirPassengers
+AP
+passanger <- as.vector(AP)
+month <- as.yearmon(time(AP))
+df <- data.frame(passanger, month)
+View(df)
+```
+
+**Catatan**: `df` merupakan representasi dataframe dari objek time series `AP`. Akan ditampilkan data yang telah di-*import* tersebut.
+
+```{r}
+AP
+```
+
+### Ukuran Data
+
+```{r size, include = TRUE}
+start(AP)
+end(AP)
+frequency(AP)
+```
+
+Terlihat bahwa data tercatat dari bulan Januari tahun 1949 sampai bulan Desember 1960 dengan frekuensi per bulan sehingga banyaknya observasi yang tercatat ada
+$12 \times 12 = 144$ observasi.
+
+## 2.3 Jenis Data
+
+- `passanger`: numerik, rasio
+- `month`: kategorik, nominal
+
+```{r type, include = TRUE}
+knitr::kable(head(df), align = "cc", caption = "Head dari df", booktabs = TRUE)
+```
+
+## 2.4 Metode Analisis Data
+
+### Runtun Waktu
+
+Dalam model runtun waktu yang akan kami buat, $Y_t:=$ `passenger` yaitu jumlah penumpang pesawat pada periode $t$. Runtun waktu $\{Y_t|t = 0, 1, 2, ...\}$ merupakan proses stokastik dengan $t$ dalam satuan bulan.
+
+### Dekomposisi Runtun Waktu
+
+Dekomposisi mengasumsikan bahwa data terdiri atas: 
+$$\begin{split} \mbox{data} &= \mbox{pola} + \mbox{eror} \\
+&= f(\mbox{tren-siklus}, \mbox{musiman}, \mbox{eror}).
+\end{split}$$
+Jadi, selain komponen pola, terdapat juga komponen dari eror atau keacakan. Eror tersebut dianggap sebagai perbedaan antara efek gabungan dari kedua subpola dari runtun waktu dan data asli. 
+
+Representasi matematika dari pendekatan dekomposisi tersebut yaitu
+$$Y_t = f(S_t, T_t, E_t)$$
+di mana $Y_t$ merupakan nilai runtun waktu (data asli) pada periode $t$, $S_t$ merupakan komponen musiman (*seasonal*) pada periode $t$, $T_t$ merupakan komponen tren-siklus (*trend-cycle*) pada periode $t$, dan
+$E_t$ merupakan komponen iregular (sisa) pada periode $t$.
+
+Dekomposisi Aditif: $Y_t = S_t + T_t + E_t$.
+
+Dekomposisi Multiplikatif: $Y_t = S_t \times T_t \times E_t$.
+
+
+### ARMA (*Autoregressive Moving Average*)
+
+Jika ${Y_t}$ merupakan proses “*mixed autoregressive moving average*” order $p$ dan $q$, dinotasikan ARMA($p, q$), maka bentuk persamaannya adalah
+
+\begin{equation} 
+Y_t = \phi_1Y_{t - 1} + \phi_2Y_{t - 2} + ... + \phi_pY_{t - p} + e_t - \theta_1e_{t - 1} - \theta_2e_{t - 2} - ... - \theta_qe_{t - q}.
+\end{equation}
+
+### ARIMA (*Integrated Autoregressive Moving Average*)
+
+Jika ${W_t}$, $W_t = \nabla^d Y_t$, merupakan proses ARMA($p, q$) yang stasioner, maka ${Y_t}$ merupakan proses ARIMA($p, d, q$). 
+
+### Model Musiman Multiplikatif
+
+Model musiman multiplikatif ARMA$(p, d, q)(P, Q)_s$ dengan periode musiman
+$s$ didefinisikan sebagai model dengan polinomial karakteristik AR $\phi(x)\Phi(x)$ dan polinomial karakteristik MA $\theta(x)\Theta(x)$ dengan
+$$\phi(x) = 1 - \phi_1x - \phi_2x^{2} - ... - \phi_px^p$$
+$$\Phi(x) = 1 - \Phi_1x^s - \Phi_2x^{2s} - ... - \Phi_Px^{Ps}$$
+dan
+$$\theta(x) = 1 - \theta_1x - \theta_2x^2 - ... - \theta_qx^q$$
+$$\Theta(x) = 1 - \Theta_1x^s - \Theta_2x^{2s} - ... - \Theta_Qx^{Qs}.$$
+
+### Model ARIMA Musiman Nonstasioner
+
+*Difference* musiman dengan periode $s$ untuk runtun waktu $Y_t$ dinotasikan dengan $\nabla_s Y_t$ dan didefinisikan sebagai $\nabla_s Y_t = Y_t - Y_{t - s}$. Untuk model musiman multiplikatif ARIMA dengan order *nonseasonal* (regular) $p, d,$ dan $q$, order *seasonal* $P, D,$ dan $Q$, serta periode *seasonal* $s$, jika *difference* dari runtun $W_t = \nabla^d\nabla_s^D Y_t$ memenuhi ARMA$(p, q)(P, Q)_s$, maka runtun $Y_t$ disebut model ARIMA($p, d, q)(P, D, Q)_s$ dengan periode musiman (*seasonal*) $s$.
+
+### Sampel *Autocorrelation Function* (ACF)
+
+Taksiran untuk $\rho_k$, autokorelasi pada lag ke-$k$, yaitu
+$$r_k = \frac{\sum_{t = k + 1}^{n}(Y_t - \bar{Y})(Y_{t - k} - \bar{Y})}{\sum_{t = 1}^{n}(Y_t - \bar{Y})^2}$$
+di mana $k = 1, 2, ...$
+
+### Ukuran Akurasi *Forecasting*
+
+Misalkan $Y_t$ merupakan observasi sebenarnya pada waktu periode ke-$t$ dan $F_t$ merupakan *forecast* (ramalan) untuk periode yang sama, maka eror didefinsikan sebagai
+$$e_t = Y_{t} - F_t.$$ 
+Jika terdapat $n$ observasi dam *forecast*, maka ukuran akurasi *forecasting* dari suatu model yaitu
+
+$$\mbox{ME} = \frac{1}{n}\sum_{t = 1}^n e_t \; (\mbox{Mean Error})$$
+$$\mbox{MAE} = \frac{1}{n}\sum_{t = 1}^n|e_t| \; (\mbox{Mean Absolute Error})$$
+$$\mbox{MSE} = \frac{1}{n}\sum_{t = 1}^{n}e_t^2 \; (\mbox{Mean Squared Error})$$
+$$\mbox{MAPE} = \frac{1}{n}\sum_{t = 1}^{n} \left| \left(\frac{Y_t - F_t}{Y_t}\right) \times 100 \right| \; (\mbox{Mean Absolute Percentage Error}).$$
+
+\newpage
+
+\section[BAB III HASIL DAN PEMBAHASAN]{BAB III \\ HASIL DAN PEMBAHASAN}
+
+## 3.1 *Exploratory Data Analysis* (EDA)
+
+### *Preprocessing*
+
+Pada bagian ini, akan dicek apakah terdapat *missing value* atau tidak.
+
+```{r}
+sapply(df, function(x) sum(is.na(x)))
+```
+Terlihat bahwa data `df` (representasi dataframe dari objek time series `AP`) tidak memiliki *missing value*.
+
+### Statistika Deskriptif
+
+```{r}
+summary(AP)
+```
+Terlihat bahwa rata-rata jumlah penumpang pesawat per bulannya yaitu sekitar 265.5 ribu penumpang, di mana jumlah penumpang pesawat per bulan terbanyak yaitu 622 ribu dan jumlah penumpang pesawat per bulan tersedikit yaitu 104 ribu penumpang.
+
+### Visualisasi
+
+Berikut ini merupakan *time* plot dari `AP`.
+
+```{r, message = FALSE, error = FALSE, fig.cap = "Line Plot Jumlah Penumpang Pesawat"}
+ggplot(AP, aes(x = time(AP), y = AP)) + geom_line() +
+  geom_smooth(method = "lm") +
+  labs(x = "Waktu (Bulan)", y = "Jumlah Penumpang", 
+       title = "Jumlah Penumpang Pesawat Bulanan dari Tahun 1949 sampai 1961")
+```
+
+Jumlah penumpang meningkat dari waktu ke waktu setiap tahun yang menunjukkan tren linier meningkat. Hal tersebut mungkin disebabkan oleh meningkatnya permintaan untuk perjalanan penerbangan dan komersialisasi maskapai penerbangan dalam periode waktu tersebut. Jika data tersebut dimodelkan dengan model linier (garis biru), model tersebut hanya mampu menangkap tren linier meningkatnya saja, tidak menangkap efek musiman dan efek perkalian (variansi yang semakin membesar) dari waktu ke waktu. Oleh karena itu, model linier tidak cocok untuk data `AP`. Dari *time* plot tersebut, terlihat bahwa mean dan variansi dari runtun waktu `AP` berubah seiring waktu yang mengindikasikan ketidakstasioneran. 
+
+Selanjutnya, akan dibuat boxplot dari `AP`.
+
+```{r, fig.cap = "Boxplot Jumlah Penumpang Pesawat"}
+boxplot(AP ~ cycle(AP), xlab = "Waktu (Bulan)", ylab = "Jumlah Penumpang",
+        main = "Jumlah Penumpang Pesawat Bulanan dari Tahun 1949-1961")
+```
+
+Dalam boxplot tersebut, terdapat lebih banyak penumpang yang bepergian di bulan 6 sampai 9 dengan rata-rata yang lebih tinggi dan variansi yang lebih tinggi daripada bulan lainnya. Informasi tersebut mengindikasikan terdapatnya pola musiman dengan siklus 12 bulan. Hal tersebut mungkin disebabkan oleh lebih banyak orang yang berlibur dan melakukan penerbangan selama periode musim panas di Amerika Serikat.
+
+
+Karena runtun waktu $Y_t$ variansinya meningkat seiring bertambahnya waktu, akan dibuat *time* plot dari transformasi $Y_t$ yaitu $Z_t = \ln( Y_t)$ untuk mengecek variansi menjadi lebih konstan atau tidak.
+
+```{r, fig.cap = "Line Plot ln(Y~t~)"}
+autoplot(log(AP)) + labs(x = "Waktu (Bulan)", y = expression("ln(Y"[t]*")"), 
+       title = expression("Time Plot ln(Y"[t]*")"))
+```
+
+Terlihat bahwa variansi dari runtun waktu $\ln(Y_t)$ lebih konstan dibandingkan dengan runtun waktu asli $Y_t$.
+
+Berdasarkan tiga plot tersebut didapatkan informasi bahwa
+
+1. Model linier tidak cocok untuk data ini karena tidak dapat menangkap efek musiman pada data.
+
+2. `AP` tampaknya merupakan deret waktu multiplikatif karena variasi musimannya (*seasonal*) meningkat seiring bertambahnya waktu. Terdapat pola musiman dengan siklus 12 bulan.
+
+3. Tidak ada outlier.
+
+4. Terdapat indikasi ketidakstasioneran pada runtun waktu $Y_t$. 
+
+5. Runtun waktu $\ln(Y_t)$ terlihat lebih konstan dalam variansi daripada runtun waktu $Y_t$. 
+
+### Dekomposisi Runtun Waktu
+
+Berdasarkan bagian visualisasi, didapatkan informasi bahwa data `AP` cenderung merupakan runtun waaktu multiplikatif. Pada bagian ini, runtun waktu tersebut akan diuraikan untuk memperkirakan tren, musiman, dan komponen acak (*eror*) menggunakan *moving average*.
+
+Model multiplikatif dari runtun waktu tersebut yaitu
+$$Y_t = S_t \times T_t \times E_t.$$
+```{r, fig.cap = "Plot Dekomposisi Runtun Waktu"}
+decomposeAP <- decompose(AP, "multiplicative")
+autoplot(decomposeAP)
+```
+
+Dalam plot runtun waktu yang telah terdekomposisi tersebut, terlihat bahwa terdapat pola tren dan musiman yang kuat seperti pada bagian visualisasi sebelumnya.
+
+### Data *Splitting*
+
+Data akan dibagi menjadi data *train* dan *test*. Akan diambil data dari tahun 1949 sampai 1958 untuk data `train` dan data sisanya yaitu dari tahun 1959 sampai 1960 untuk data `test`. *Cross validation* dilakukan pada data, dengan data *train* digunakan untuk pemodelan, kemudian data *test* akan digunakan untuk menilai kinerja (*performance*) dari model.
+
+```{r}
+train <- window(AP, start = 1949, end = c(1958, 12))
+test <- window(AP, start = 1959, end = c(1960, 12))
+```
+
+## 3.2 Uji Stasioneritas Runtun Waktu
+
+Runtun waktu stasioner memiliki syarat bahwa rata-rata, variansi, dan kovariansi bukan merupakan fungsi dari waktu. Agar sesuai dengan model ARIMA, runtun waktu harus stasioner. 
+
+
+Akan digunakan Uji Kwiatkowski-Phillips-Schimdt-Shin (KPSS).
+
+$H_0$: Tidak ada *unit root* (runtun waktu stasioner)
+
+$H_1$: Ada *unit root* (runtun waktu tidak stasioner)
+
+```{r}
+kpss.test(train)
+```
+Tolak $H_0$ jika  $p-value < \alpha$. Dari hasil tersebut, didapatkan bahwa $p-value = 0.01 < \alpha = 0.05$ yang berarti $H_0$ ditolak. Berarti, runtun waktu $Y_t$ tidak stasioner. Berdasarkan hasil visualisasi pada bagian EDA, didapatkan bahwa $\ln(Y_t)$ variansinya cenderung konstan, namun memiliki tren meningkat. Akan dilakukan uji stasioneritas pada runtun waktu dari *differencing* pertama pada $\ln(Y_t)$.
+
+```{r}
+kpss.test(diff(log(train), lag = 1))
+```
+Terlihat bahwa $p-value = 0.1 > \alpha = 0.05$ yang berarti $H_0$ tidak ditolak. Misalkan $Z_t = \ln(Y_t)$, maka runtun waktu $X_t = \nabla Z_t = Z_t - Z_{t - 1}$ merupakan runtun waktu yang stasioner.
+
+```{r, fig.cap = "Line Plot X~t~"}
+autoplot(diff(log(train), lag = 1)) + labs(x = "Waktu (Bulan)", y = expression("X"[t]), 
+       title = expression("Time Plot X"[t]))
+```
+
+Dari *time* plot tersebut, terlihat bahwa mean dan variansi $X_t$ relatif stabil, tidak bergantung pada waktu.
+
+## 3.3 Spesifikasi Model
+
+Akan dibuat *time* plot $X_t$ dengan menambahkan label bulan di plotnya.
+
+```{r, fig.cap = "Deteksi Seasonal dari Differencing"}
+plot(diff(log(train), lag = 1), type = 'l', ylab = 'Difference dari ln(AirPassengers)')
+points(diff(log(train), lag = 1), x = time(diff(log(train), lag = 1)), 
+       pch = as.vector(season(diff(log(train), lag = 1))))
+```
+
+Pola musiman dapat diamati dengan melihat label bulan dari plot tersebut. Bulan September, Oktober, dan November sebagian besar berada di titik terendah dan Desember sebagian besar berada di titik tertinggi. Hal ini sejalan dengan visualisasi pada bagian EDA, terdapatnya pola musiman dengan periode musimannya 12. Oleh karena itu, akan dibuat *time* plot runtun waktu *differencing* musiman dengan periode musiman $s = 12$ dari *differencing* pertama $\ln Y_t$ untuk mengetahui apakah pola musiman masih terdeteksi atau tidak.
+
+```{r, fig.cap = "Deteksi Seasonal dari Differencing"}
+plot(diff(diff(log(train)), lag = 12), type = 'l', 
+     ylab = 'Differencing Seasonal & Pertama dari ln(AP)')
+points(diff(diff(log(train)), lag = 12), x = time(diff(diff(log(train)), lag = 12)), 
+       pch = as.vector(season(diff(diff(log(train)), lag = 12))))
+```
+
+Sekarang, pola musiman jauh lebih tidak jelas. Beberapa titik di bulan Desember tinggi dan beberapa titik yang lainnya rendah. Demikian juga beberapa titik di bulan Oktober tinggi dan beberapa titik yang lainnya rendah. Oleh karena itu, akan digabungkan *differencing* regular (*nonseasonal*) dan *differencing seasonal* untuk spesifikasi model selanjutnya. Akan dibuat plot ACF dan PACF dari $W_t = \nabla^1\nabla_{12}^1 \ln(Y_t)$ di mana $d = 1, D = 1,$ dan $s = 12$.
+
+```{r, fig.cap = "Summary Plot"}
+ggtsdisplay(diff(diff(log(train), lag = 12)))
+```
+
+Terlihat bahwa terdapat garis yang signifikan di Lag = 12 pada plot ACF (berhubungan dengan order *seasonal* MA) maupun PACF (berhubungan dengan order *seasonal* AR). Oleh karena itu, akan dilakukan *fitting* model pertama yaitu ARIMA$(0, 1, 0)(1, 1, 1)_{12}$ = `fit1` pada $\ln(Y_t)$.
+
+```{r, fig.cap = "Summary Plot"}
+fit1 <- Arima(train, order = c(0, 1, 0), 
+              seasonal = list(order = c(1, 1, 1), period = 12),
+              lambda = 0, include.constant = TRUE)
+# lambda = 0 -> transformasi ln
+# include.constant = TRUE -> karena data tidak mulai dari 0
+ggtsdisplay(fit1$residuals)
+```
+
+Dari plot residual `fit1`, terlihat bahwa terdapat garis yang signifikan di Lag = 1 pada plot ACF maupun PACF. Berdasarkan hal tersebut, akan dilakukan *fitting* model kedua yaitu ARIMA$(1, 1, 1)(1, 1, 1)_{12}$ = `fit2` pada $\ln(Y_t)$, di mana melibatkan order reguler dari AR dan MA. 
+
+```{r, fig.cap = "Summary Plot"}
+fit2 <- Arima(train, order = c(1, 1, 1), seasonal = c(1, 1, 1),
+              lambda = 0, include.constant = TRUE)
+# lambda = 0 -> transformasi ln
+# include.constant = TRUE -> karena data tidak mulai dari 0
+# Note: default dari periode seasonal = 12
+ggtsdisplay(fit2$residuals)
+```
+
+Terlihat bahwa untuk PACF sudah tidak signifikan berbeda dengan 0, namun terdapat garis yang signifikan pada Lag = 23 pada ACF. Selanjutnya, akan dilakukan *fitting* model ketiga yaitu ARIMA$(0, 1, 1)(0, 1, 1)_{12}$ = `fit3` pada $\ln(Y_t)$ untuk mengecek apakah pengurangan parameter memberikan hasil yang mirip atau tidak dengan model sebelumnya.
+
+```{r, fig.cap = "Summary Plot"}
+fit3 <- Arima(train, order = c(0, 1, 1), seasonal = c(0, 1, 1),
+              lambda = 0, include.constant = TRUE)
+# lambda = 0 -> transformasi ln
+# include.constant = TRUE -> karena data tidak mulai dari 0
+ggtsdisplay(fit3$residuals)
+```
+
+Terlihat bahwa pada model ketiga garisnya sudah tidak signifikan lagi untuk PACF, namun terdapat garis yang signifikan pada plot ACF di Lag = 23. Hal tersebut sama dengan model kedua.
+
+### Perbandingan Model
+
+Pada bagian ini, akan dilakukan pemilihan model berdasarkan nilai AIC dan BIC-nya.
+
+```{r}
+summary(fit1)
+summary(fit2)
+summary(fit3)
+```
+
+Dari ketiga model tersebut, model `fit3` memiliki nilai AIC dan BIC yang paling kecil yaitu AIC = -389.02 dan BIC = -381. Jadi, model final yang akan dipilih yaitu model `fit3` = ARIMA$(0, 1, 1)(0, 1, 1)_{12}$, yang berarti $\ln(Y_t)$ merupakan ARIMA$(0, 1, 1)(0, 1, 1)_{12}$.
+
+## 3.4 Estimasi Parameter
+
+Akan dilakukan estimasi parameter dari model `fit3`.
+
+```{r}
+summary(fit3)
+```
+Dari hasil tersebut didapatkan:
+$$\begin{split}
+\theta(x)\Theta(x)e_t &= (1 + \hat{\theta}x)(1 +\hat{\Theta}x^{12})e_t \\
+&= e_t + \hat{\theta}xe_t + \hat{\Theta}x^{12}e_t+\hat{\theta}\hat{\Theta}x^{13}e_t \\
+&= e_t + \hat{\theta}e_{t - 1} + \hat{\Theta}e_{t - 12} + \hat{\theta}\hat{\Theta}e_{t - 13}
+\end{split}$$
+
+**Catatan**: tanda + karena *default* persamaan MA pada R menggunakan tanda +. Misalkan $Z_t = \ln(Y_t)$, model ARIMA dari `fit3` yaitu
+$$W_t = \nabla^1\nabla_{12}^1Z_t = e_t + \hat{\theta}e_{t - 1} + \hat{\Theta}e_{t - 12} + \hat{\theta}\hat{\Theta}e_{t - 13}$$
+$$Z_t - Z_{t - 1} - (Z_{t - 12} - Z_{t - 13}) = e_t + \hat{\theta}e_{t - 1} + \hat{\Theta}e_{t - 12} + \hat{\theta}\hat{\Theta}e_{t - 13}$$
+$$\ln(Y_t) - \ln(Y_{t - 1}) - [\ln(Y_{t - 12}) - \ln(Y_{t - 13})] = e_t + \hat{\theta}e_{t - 1} + \hat{\Theta}e_{t - 12} + \hat{\theta}\hat{\Theta}e_{t - 13}$$
+$$\ln(Y_t) - \ln(Y_{t - 1}) - [\ln(Y_{t - 12}) - \ln(Y_{t - 13})] = e_t -0.3424e_{t - 1} - 0.5405e_{t - 12} + 0.3424 \times 0.5405e_{t - 13}$$
+\begin{equation} \label{eq:hasil}
+\ln(Y_t) - \ln(Y_{t - 1}) - [\ln(Y_{t - 12}) - \ln(Y_{t - 13})] = e_t -0.3424e_{t - 1} - 0.5405e_{t - 12} + 0.1850672e_{t - 13} 
+\end{equation}
+
+```{r, fig.cap = "Plot Inverse MA Roots"}
+autoplot(fit3)
+```
+
+Terlihat bahwa model tersebut *invertible* karena semua *inverse* MA *root* berada di  dalam *unit circle* pada bidang kompleks.
+
+### Uji Signifikansi Estimasi Parameter
+
+```{r}
+coeftest(fit3)
+```
+
+Terlihat bahwa kedua $p-value$ untuk masing-masing parameter $< \alpha = 0.05$, yang berarti bahwa kedua koefisien signifikan berbeda dengan 0.
+
+## 3.5 Model Diagnostik
+
+Akan dilakukan uji model diagnostik pada model di persamaan (1).
+
+```{r, fig.cap = "Summary Plot"}
+ggtsdiag(fit3)
+```
+
+Karena pada bagian spesifikasi model, plot ACF pada residual model `fit3` terdapat garis yang signifikan pada Lag = 23, akan dilakukan uji signifikansi menggunakan uji Ljung-Box.
+
+$H_0$: Residual merupakan *white noise* atau independen dan distribusi identik (i.i.d)
+
+$H_1$: Residual menunjukkan hubungan korelasi (non-*random*) 
+
+```{r}
+Box.test(fit3$residuals, lag = 30, type = "Ljung")
+```
+
+Dilakukan uji Ljung-Box sampai lag ke-30 agar melibatkan lag ke-27. Didapatkan $p-value = 0.8305 > \alpha = 0.05$ yang berarti $H_0$ tidak ditolak. Jadi, residual dari model `fit3` merupakan *white noise*. Plot dari residual tersebut tampak berpusat di sekitar 0 sebagai tanpa pola, yang mana juga sesuai dengan karakteristik *white noise*. 
+
+```{r, fig.cap = "Histogram dari Residual"}
+hist(residuals(fit3), xlab = 'Residuals')
+```
+
+```{r, fig.cap = "Q-Q Plot dari Residual"}
+qqnorm(residuals(fit3))
+qqline(residuals(fit3))
+```
+
+Dari kedua plot tersebut, distribusi dari residual relatif tidak memenuhi distribusi normal. Akan dilakukan uji Shapiro-Wilk untuk memastikan hal tersebut.
+
+$H_0$: Residual berdistribusi normal
+
+$H_1$: Residual tidak berdistribusi normal
+
+```{r}
+shapiro.test(residuals(fit3))
+```
+
+Karena $p-value = 0.1316 > \alpha = 0.05$, maka $H_0$ tidak ditolak. Jadi, residual berdistribusi normal, walaupun secara visual tidak sangat "mirip" dengan distribusi normal. Hal tersebut mungkin dikarenakan jumlah sampel yang kurang banyak. Berdasarkan model diagnostik tersebut, model ARIMA$(0, 1, 1)(0, 1, 1)_{12}$ cukup sesuai. Selanjutnya, akan dilakukan *forecasting* dengan menggunakan model tersebut.
+
+## 3.6 *Forecasting*
+
+Akan dicek visual dari *fitted values* dari model ARIMA$(0, 1, 1)(0, 1, 1)_{12}$.
+
+```{r, fig.cap = "Forecasting Plot"}
+autoplot(cbind(train, fit3$fitted))
+```
+
+Terlihat bahwa dua grafik cukup berimpit yang menandakan model `fit3` cukup bagus dalam memodelkan data `train`. Akan dilakukan *forecasting* untuk data `test` menggunakan model yang telah dilatih pada data `train`.
+
+```{r}
+m_test <- Arima(test, model = fit3)
+accuracy(m_test)
+```
+Karena nilai MAPE = 1.478059 < 10 mengindikasikan bahwa peramalan (*forecasting*) yang dilakukan sangat akurat.
+
+```{r, fig.cap = "Forecasting pada Data Test"}
+autoplot(cbind(test, m_test$fitted))
+```
+
+Terlihat bahwa kedua plot berimpit yang menandakan kecocokan model yang tinggi. Selanjutnya, akan dilakukan *forecasting* untuk 4 tahun ke depan (*forecast origin* pada akhir waktu data `train`) dengan interval kepercayaan 95%, di mana $h$ adalah periode horizon *forecasting* dalam bulan.
+
+```{r, fig.cap = "Forecasting 4 Tahun ke Depan"}
+forecastAP <- forecast(fit3, level = c(95), h = 48)
+autoplot(forecastAP)
+```
+
+Terlihat bahwa batas perkiraan (*forecast limit*) semakin melebar seiring bertambahnya waktu.
+
+\newpage
+
+# PENUTUP
+
+## Kesimpulan
+
+Berdasarkan hasil analisis yang telah dilakukan menggunakan data jumlah penumpang maskapai Amerika Serikat bulanan dari tahun 1949 hingga 1960 (`AirPassengers`) didapatkan kesimpulan sebagai berikut.
+
+1. Model linier tidak cocok untuk memodelkan data ini karena tidak dapat menangkap efek musiman pada data. Model yang sesuai untuk data tersebut yaitu ln(`AirPassangers`) merupakan ARIMA$(0, 1, 1)(0, 1, 1)_{12}$, dengan taksiran model
+$$\ln(Y_t) - \ln(Y_{t - 1}) - [\ln(Y_{t - 12}) - \ln(Y_{t - 13})] = e_t -0.3424e_{t - 1} - 0.5405e_{t - 12} + 0.1850672e_{t - 13}.$$
+
+2. Residual dari model pada persamaan (\ref{eq:hasil}) sudah memenuhi asumsi model diagnostik meskipun secara visual kurang menunjukkan kemiripan dengan distribusi normal.
+
+3. *Forecasting* untuk data `test` menghasilkan nilai MAPE = 1.478059 < 10, yang mengindikasikan bahwa peramalan (*forecasting*) dilakukan dengan sangat akurat. Terlihat bahwa data asli dan `fitted values` berimpit pada *time plot*. Untuk *forecasting* 4 tahun ke depan, dimulai dari *forecast origin* yaitu akhir waktu data `train`, batas perkiraan (*forecast limit*) semakin melebar seiring bertambahnya waktu. Nilai *forecasting* menunjukkan tren meningkat yang mengindikasikan kemungkinan kenaikan jumlah penumpang pesawat bulanan pada maskapai penerbangan Amerika Serikat di masa depan.
+
+\newpage
+
+# DAFTAR PUSTAKA 
+
+[1] Cryer, Jonathan D., & Chan, Kung-Sik. (2008). *Time Series Analysis with Application in R*. Springer Text in Statistics. 
+
+[2] Federal Aviation Administration. (2023). *FAA Contributors to ATO by the Numbers*. Diakses dari \textcolor{blue}{\url{https://www.faa.gov/air_traffic/by_the_numbers/media/Air_Traffic_by_the_Numbers_2023.pdf}} 
+
+[3] Makridakis, S. G., Wheelwright, S. C., & Hyndman, R. J. (1997). *Forecasting Methods and Application*. Wiley. 
+
+[4] Wulandari, Rosita Ayu, & Gernowo, Rahmat. (2019). *Metode Autoregressive Integrated Moving Average (ARIMA) dan Metode Adaptive Neuro Fuzzy Inference System (ANFIS) dalam Analisis Curah Hujan*. Berkala Fisika: Volume 1 No. 1. 
+
+## *Link* File
+
+- kaggle.com. Air Passengers. Data diambil dari *link* berikut. \textcolor{blue}{\url{https://www.kaggle.com/datasets/chirag19/air-passengers?resource=download&select=AirPassengers.csv}}
+
+- File *project*, R, dan lain-lain dapat diakses pada *link* berikut. \textcolor{blue}{\url{https://drive.google.com/drive/folders/1-2GksgEIB5PltxUG6P7uGq2-BlBVsJeG?usp=drive_link}}
+
+\newpage
+
+# LAMPIRAN 
+
+## Lampiran I. Data Penelitian 
+
+```{r, echo = FALSE}
+library(knitr)
+knitr::kable(cbind(df[1:36, ], df[37:72, ], df[73:108, ], df[109:144, ]),
+             align = rep("c", 4))
+```
+
+\newpage
+
+# PERSENTASE KONTRIBUSI KELOMPOK
+
+\begin{table}[ht]
+  \centering
+  \resizebox{\textwidth}{!}{\begin{tabular}{ccccc} \hline
+  
+  No. & Nama & NPM & Kontribusi & Tingkat Kontribusi \\ \hline \hline
+  
+  \hline
+  
+  1.  & Anggota 1 & 2200000000 & Mengerjakan \emph{project} & 100\% \\ 
+  
+  2.  & Anggota 2 & 2200000000 & Mengerjakan \emph{project} & 100\% \\ 
+
+  3.  & Anggota 3 & 2200000000 & Mengerjakan \emph{project} & 100\% \\ 
+  
+  4.  & Anggota 4 & 2200000000 & Mengerjakan \emph{project} & 100\% \\ 
+  
+  5.  & Anggota 5 & 2200000000 & Mengerjakan \emph{project} & 100\% \\ 
+  
+  \hline
+  
+  \end{tabular}}
+\end{table}
+
+
+\newpage
