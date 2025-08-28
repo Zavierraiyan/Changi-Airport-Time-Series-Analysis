@@ -43,4 +43,4 @@ Hal ini memberikan wawasan berharga bagi manajemen bandara, maskapai, maupun ind
 - Koordinasi dengan pihak maskapai dan otoritas bandara untuk antisipasi kapasitas dan layanan.  
 - Pertimbangkan teknologi analitik lanjutan (AI, Big Data) untuk mendukung pengambilan keputusan di masa depan.  
 
-📄 [Laporan Lengkap](https://drive.google.com/file/d/1YMdNZ-sZI5be6nGwgU3Q74xj1VcBynR9/view?usp=drive_link)
+📄 [Klik untuk melihat laporan lengkap](https://drive.google.com/file/d/1YMdNZ-sZI5be6nGwgU3Q74xj1VcBynR9/view?usp=drive_link)
